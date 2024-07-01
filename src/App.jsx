@@ -18,6 +18,13 @@ const App = ()=>{
                 error ={'somthing went wrong'}
              >
              </InputGroup>
+             <InputGroup 
+                name='Password'
+                placeholder= {'Enter your Password'}
+                label={'Password'}
+                error ={'Please wright a valid password'}
+             >
+             </InputGroup>
         </>
     )
 }
