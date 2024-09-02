@@ -20,11 +20,9 @@ const ErrorMessage = styled.div`
     font-size: 0.8rem;
     color: red;
 `  
-const handleChange=(e)=>{
-    
-}
 
-const InputGroup = ({label, name, value, placeholder, onChaange, onBlur, onFocus,error})=>{
+
+const InputGroup = ({label, name, value, placeholder, onChange, onBlur, onFocus,error})=>{
 
 
     return(
@@ -32,7 +30,7 @@ const InputGroup = ({label, name, value, placeholder, onChaange, onBlur, onFocus
             <Label htmlFor={name}>
                 {label}
             </Label>
-            <TextInput onChange={handleChange} name={name} id={name} placeholder={placeholder}></TextInput>
+            <TextInput onChange={onChange} name={name} id={name} placeholder={placeholder ?? ''} value={value} onFocus={onFocus} onBlur={onBlur} error={error}></TextInput>
             {error &&<ErrorMessage>{error}</ErrorMessage>}
         </Container>
     )
