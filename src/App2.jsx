@@ -5,117 +5,80 @@ import Button from "./component/UI/buttons/Button"
 import { useState } from "react"
 
 import InputGroup from "./component/shared/forms/inputGroup"
-import { deepClone } from "./utils/object-utills"
 
 const init = {
-    title: {
-        value:'',
-        error:'',
-        focus:false,
-    },
-    bio: {
-        value:'',
-        error:'',
-        focus:false,
-    },
-    skills: {
-        value:'',
-        error:'',
-        focus:false,
-    },
+    title: '',
+    bio: '',
+    skills: '',
 }
 
 
 
 const App = ()=>{
-    
-    const [state, setState] =useState({...init})
-    const [hasError, setHasError] = useState(false)
-    const mapStateToValues = (e) =>{
-        return Object.keys(state).reduce((acc, cur) => {
-            acc[cur] =state[cur].value
-            return acc
-        }, {})
-    }
-
+ 
+    const [values, setvalues] = useState({...init})
+    const [errors, setErrors] = useState({...init})
+    const [focuses, setFocuses] = useState({
+        title:false,
+        bio:false,
+        skills: false,
+    })
 
     const handleSubmit= (e) => {
         e.preventDefault()
-        const values = mapStateToValues(state)
         const {isValid, errors} = checkValidity(values)
-
-
         if(isValid){
-            console.log(state)
-        } else{
-            const oldState = deepClone(state);
-            Object.keys(errors).forEach((key) => {
-                oldState[key].error = errors[key]
-            })
 
-            setState(oldState)
+            setvalues({...init})// is reset form input value after don't error submit
+            setErrors({...init})
+        } else{
+            setErrors({...errors})
         }
-        setState(init)
     }
 
 
     const handleChange= (e) => {
+        setvalues((prev)=>({
+            ...prev,
+            [e.target.name]: e.target.value,
+        }))
 
-        const {name:key, value}= e.target
-        const oldState= deepClone(state)
-        const values = mapStateToValues(state)
-        const {errors}=checkValidity(oldState)
-            if(oldState[key].focus  && errors[key]){
-                oldState[key].error = errors[key]
-            } else{
-                oldState[key].error =''
-            }
-        oldState[key].value = value
-        setState(oldState)
+
+        const key =e.target.name
+        const {isValid, errors}=checkValidity(values)
         
-    //     const {name: key, value} = e.target
-    //     setState((prev)=>({
-    //         ...prev,
-    //         [key]: {
-    //             ...prev[key],
-    //             value: value,
-    //         }
-    //     }))
-
-
-        // const key =e.target.name
-        // const {isValid, errors}=checkValidity(values)
-        
-        // if(!errors[key]){
-        //     setErrors((prev) =>({
-        //         ...prev,
-        //         [key]: '',
-        //     }))
-        // }
+        if(!errors[key]){
+            setErrors((prev) =>({
+                ...prev,
+                [key]: '',
+            }))
+        }
     }
 
 
     const handleFocus =(e) =>{
-        const {name}= e.target
-        const oldState = deepClone(state)
-        oldState[name].focus = true
-        setState(oldState)
+        const {errors}=checkValidity(values)
+        setFocuses((prev) =>({
+            ...prev,
+            [e.target.name] : true,
+        }))
     }
     
     const handleBlur =(e)=>{
-
         const key =e.target.name
-        const values = mapStateToValues(state)
-        const {errors}=checkValidity(values)
+        const {isValid, errors}=checkValidity(values)
         
-        const {name}= e.target
-        const oldState= deepClone(state)
-        if(oldState[key].focus  && errors[key]){
-            oldState[key].error = errors[key]
-        } else{
-            oldState[key].error =''
+        if(errors[key] && focuses[key]){
+            setErrors((prev) =>({
+                ...prev,
+                [key]: errors[key],
+            }))
+        } else {
+            setErrors((prev) =>({
+                ...prev,
+                [key]: '',
+            }))
         }
-        setState(oldState)
     }
 
 
@@ -140,40 +103,42 @@ const App = ()=>{
   
     return(
         <>
-                <div>
+
+
+        <div>
             <form onSubmit={handleSubmit}>
                 <div style={{display:'flex', gap:'0.8rem',flexDirection:'column'}}>
                 <InputGroup 
-                    value={state.title.value}
+                    value={values.title}
                     name={'title'}
                     placeholder= {'Enter your Title...'}
                     label={'Title:'}
                     onChange={handleChange}
                     onFocus={handleFocus}
                     onBlur={handleBlur}
-                    error ={state.title.error}
+                    error ={errors.title}
                 ></InputGroup>
                 <InputGroup 
-                    value={state.bio.value}
+                    value={values.bio}
                     name={'bio'}
                     placeholder= {'Enter your Bio'}
                     label={'Bio:'}
                     onChange={handleChange}
                     onFocus={handleFocus}
                     onBlur={handleBlur}
-                    error ={state.bio.error}
+                    error ={errors.bio}
                 ></InputGroup>
                 <InputGroup 
-                    value={state.skills.value}
+                    value={values.skills}
                     name={'skills'}
                     placeholder= {'Enter your Skills'}
                     label={'Skills:'}
                     onChange={handleChange}
                     onFocus={handleFocus}
                     onBlur={handleBlur}
-                    error ={state.skills.error}
+                    error ={errors.skills}
                 ></InputGroup>
-                <Button disabled={hasError} type='submit'>Submit</Button>
+                <Button type='submit'>Submit</Button>
                 </div>
 
                 </form>
